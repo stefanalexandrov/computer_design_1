@@ -27,8 +27,9 @@
 --------------------------------------------------------------------------------
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
-use work.defs.all;
-use work.testutil.all;
+use IEEE.NUMERIC_STD.all;
+--use work.defs.all;
+--use work.testutil.all;
  
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
@@ -52,33 +53,148 @@ ARCHITECTURE behavior OF alu_tb IS
  
    constant clk_period : time := 20 ns;
    -- component instantiation
-  DUT: entity work.alu
+  
+ 
+	procedure check (
+      condition : in boolean;
+      error_msg : in string) is
+    begin  -- procedure check
+      assert condition report error_msg severity warning;
+    end procedure check;
+
+ 
+ 
+BEGIN
+ 
+	DUT: entity work.alu
     port map (
 			 operand_A => operand_A,
           operand_B => operand_B,
           result => result,
           zero => zero,
           control => control);
- 
-
- 
- 
-BEGIN
- 
   -- clock generation
   --clk <= not clk after clk_period/2;
 
   ALU_run: process
   begin
     -- insert signal assignments here
-    wait for clk_period;
-	 operand_A <= x"00000001"
-	 operand_B <= x"00000001"
-	 control <= b"0010"
+    wait for clk_period; -- addition of positive numbers
+	 operand_A <= x"00000001";
+	 operand_B <= x"00000001";
+	 control <= b"0010";
     wait for clk_period;
     check(result = x"00000002", "result incorrect!");
-    report "Test 1 passed";
+    report "Test 1 passed" severity note;
 
+	 wait for clk_period; -- addition of positive and negative equal magnitude numbers
+	 operand_A <= std_logic_vector(to_signed(-1, 32)); --minus 1
+	 operand_B <= x"00000001";
+	 control <= b"0010";
+    wait for clk_period;
+    check(result = x"00000000", "result incorrect!");
+    report "Test 2 passed" severity note;
+	 
+	 wait for clk_period; -- addititon of positive and negative numbers, negative number magnitude is greater
+	 operand_A <= std_logic_vector(to_signed(-10, 32)); --minus 1
+	 operand_B <= x"00000001";
+	 control <= b"0010";
+    wait for clk_period;
+    check(result = std_logic_vector(to_signed(-9, 32)), "result incorrect!");
+    report "Test 3 passed" severity note;
+	 
+	 wait for clk_period; -- subtraction of positive and negative numbers, negative number magnitude is greater
+	 operand_A <= std_logic_vector(to_signed(-10, 32)); --minus 1
+	 operand_B <= x"00000001";
+	 control <= b"0110";
+    wait for clk_period;
+    check(result = std_logic_vector(to_signed(-11, 32)), "result incorrect!");
+    report "Test 4 passed" severity note;
+	 
+	 wait for clk_period; -- subtraction of positive numbers, expected result negative
+	 operand_A <= x"00000001";
+	 operand_B <= x"00000002";
+	 control <= b"0110";
+    wait for clk_period;
+    check(result = std_logic_vector(to_signed(-1, 32)), "result incorrect!");
+    report "Test 5 passed" severity note;
+	 
+	 wait for clk_period; -- subtraction of two negative numbers
+	 operand_A <= std_logic_vector(to_signed(-10, 32)); --minus 1
+	 operand_B <= std_logic_vector(to_signed(-8, 32));
+	 control <= b"0110";
+    wait for clk_period;
+    check(result = std_logic_vector(to_signed(-2, 32)), "result incorrect!");
+    report "Test 6 passed" severity note;
+	 
+	 wait for clk_period; -- AND
+	 operand_A <= b"0001_0001_0100_0000_0000_0010_0010_0000"; 
+	 operand_B <= b"0000_0001_0100_0000_0001_0000_0010_0000";
+	 control <= b"0000";
+    wait for clk_period;
+    check(result = b"0000_0001_0100_0000_0000_0000_0010_0000", "result incorrect!");
+    report "Test 7 passed" severity note;
+	 
+	 wait for clk_period; -- OR
+	 operand_A <= b"0001_0001_0100_0000_0000_0010_0010_0000";
+	 operand_B <= b"0000_0001_0100_0000_0001_0000_0010_0000";
+	 control <= b"0001";
+    wait for clk_period;
+    check(result = b"0001_0001_0100_0000_0001_0010_0010_0000", "result incorrect!");
+    report "Test 8 passed" severity note;
+	 
+	 
+	 
+	  wait for clk_period; -- SLT true condition, positive numbers
+	 operand_A <= x"01000110"; 
+	 operand_B <= x"11100101";
+	 control <= b"0111";
+    wait for clk_period;
+    check(result = x"00000001", "result incorrect!");
+    report "Test 9 passed" severity note;
+	 
+	 wait for clk_period; -- SLT false condition, positive numbers
+	 operand_A <= x"11000110"; 
+	 operand_B <= x"00000001";
+	 control <= b"0111";
+    wait for clk_period;
+    check(result = x"00000000", "result incorrect!");
+    report "Test 10 passed" severity note;
+	 
+	 wait for clk_period; -- SLT true condition, negative numbers
+	 operand_A <= std_logic_vector(to_signed(-20, 32)); 
+	 operand_B <=	std_logic_vector(to_signed(-9, 32));
+	 control <= b"0111";
+    wait for clk_period;
+    check(result = x"00000001", "result incorrect!");
+    report "Test 11 passed" severity note;
+	 
+	 wait for clk_period; -- SLT false condition, negative numbers
+	 operand_A <= std_logic_vector(to_signed(-9, 32)); 
+	 operand_B <=	std_logic_vector(to_signed(-20, 32));
+	 control <= b"0111";
+    wait for clk_period;
+    check(result = x"00000000", "result incorrect!");
+    report "Test 12 passed" severity note;
+	 
+	  wait for clk_period; -- test zero
+	 operand_A <= std_logic_vector(to_signed(2, 32)); 
+	 operand_B <=	std_logic_vector(to_signed(-2, 32));
+	 control <= b"0010";
+    wait for clk_period;
+    check(zero = '1', "result incorrect!");
+    report "Test 13 passed" severity note;
+	 
+	  wait for clk_period; -- test zero
+	 operand_A <= std_logic_vector(to_signed(5, 32)); 
+	 operand_B <=	std_logic_vector(to_signed(-2, 32));
+	 control <= b"0010";
+    wait for clk_period;
+    check(zero = '0', "result incorrect!");
+    report "Test 14 passed" severity note;
+	 
+	 report "SUCCESS" severity failure;
+	 
 	end process;
 
 END;
