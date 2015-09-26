@@ -59,7 +59,7 @@ ARCHITECTURE behavior OF alu_tb IS
       condition : in boolean;
       error_msg : in string) is
     begin  -- procedure check
-      assert condition report error_msg severity warning;
+      assert condition report error_msg severity failure;
     end procedure check;
 
  
