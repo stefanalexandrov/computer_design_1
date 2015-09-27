@@ -21,7 +21,7 @@ architecture behaviour of instruction_manager_tb is
    signal alu_zero : std_logic;
    signal branch : std_logic;
    signal jump : std_logic;
-   signal branch_adress   :  std_logic_vector(31 downto 0);
+   signal branch_address   :  std_logic_vector(31 downto 0);
    signal instruction_out : std_logic_vector(31 downto 0);
    signal PC_to_memory : std_logic_vector(31 downto 0) := x"00000000";
         
@@ -51,7 +51,7 @@ begin  -- behaviour
     alu_zero => alu_zero,
     branch => branch,
     jump => jump,
-    branch_adress => branch_adress,
+    branch_address => branch_address,
     instruction_out => instruction_out,
     imem_data_in => imem_data_in,
     imem_address => PC_to_memory);
@@ -89,7 +89,8 @@ begin  -- behaviour
           WriteInstr(x"33333333", to_unsigned(2, ADDR_WIDTH));
           WriteInstr(x"44444444", to_unsigned(3, ADDR_WIDTH));
           WriteInstr(x"55555555", to_unsigned(4, ADDR_WIDTH));
-          WriteInstr(x"66666666", to_unsigned(5, ADDR_WIDTH));
+          WriteInstr(x"00000000", to_unsigned(5, ADDR_WIDTH));  --jump to
+                                                                --address 11
           WriteInstr(x"77777777", to_unsigned(6, ADDR_WIDTH));
           WriteInstr(x"88888888", to_unsigned(7, ADDR_WIDTH));
           WriteInstr(x"99999999", to_unsigned(8, ADDR_WIDTH));
@@ -121,8 +122,30 @@ begin  -- behaviour
         wait for clk_period;
         check(instruction_out = x"55555555", "Test1 - 5th error");
         report "Test 1 passed" severity note;
+        jump <= '1';
         wait for clk_period;
-        --check(instruction_out = x"00000001", "Second error");
+        jump <= '0';
+        wait for clk_period;
+        wait for clk_period;
+        --End of simple pc increment test
+
+        
+        check(instruction_out = x"11111111", "Test2 - First jump error");
+        wait for clk_period;
+        check(instruction_out = x"22222222", "Test2 - Second jump error");
+        report "Test 2 passed" severity note;
+
+        branch <= '1';
+        branch_address <= x"00000003";
+        wait for clk_period;
+        wait for clk_period;
+        check(instruction_out = x"44444444", "Test3 - First Branch error");
+        alu_zero <= '1';
+        wait for clk_period;
+        wait for clk_period;            --check the clock period here
+        wait for clk_period;
+        check(instruction_out = x"77777777", "Test3 - Second Branch error");
+        
         assert false report "TEST SUCCESS" severity failure;
         
   end process;

@@ -10,7 +10,7 @@ entity instruction_manager is
     alu_zero        : in  std_logic;
     branch          : in  std_logic;
     jump            : in  std_logic;
-    branch_adress   : in  std_logic_vector(31 downto 0);
+    branch_address   : in  std_logic_vector(31 downto 0);
     instruction_out : out std_logic_vector(31 downto 0);
     imem_data_in    : in  std_logic_vector(31 downto 0);
     imem_address    : out std_logic_vector(31 downto 0));
@@ -23,7 +23,7 @@ architecture behavioural of instruction_manager is
   signal increment_PC        : std_logic_vector(31 downto 0);
   signal out_alu             : std_logic_vector(31 downto 0);
   signal first_mux_out       : std_logic_vector(31 downto 0);
-  signal jump_adress         : std_logic_vector(31 downto 0);
+  signal jump_address         : std_logic_vector(31 downto 0);
   signal current_instruction : std_logic_vector(31 downto 0);
 
   
@@ -33,10 +33,10 @@ begin  -- behavioural
   imem_address        <= PC;
   current_instruction <= imem_data_in;
   instruction_out     <= current_instruction;
-  out_alu             <= std_logic_vector(unsigned(increment_PC) + unsigned(branch_adress));
-  jump_adress         <= current_instruction(25 downto 0) & next_PC(31 downto 26);
+  out_alu             <= std_logic_vector(unsigned(increment_PC) + unsigned(branch_address));
+  jump_address         <= current_instruction(25 downto 0) & next_PC(31 downto 26);
 
-  with branch and alu_zero select
+  with (branch and alu_zero) select
     first_mux_out <=
     increment_PC when '0',
     out_alu      when '1';
@@ -44,7 +44,7 @@ begin  -- behavioural
   with jump select
     next_PC <=
     first_mux_out when '0',
-    jump_adress   when '1';
+    jump_address   when '1';
 
   process(clk, rst) is
   begin
