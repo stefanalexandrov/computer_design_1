@@ -142,9 +142,10 @@ begin  -- behaviour
         check(instruction_out = x"44444444", "Test3 - First Branch error");
         alu_zero <= '1';
         wait for clk_period;
+        branch <= '0';
         wait for clk_period;            --check the clock period here
         wait for clk_period;
-        check(instruction_out = x"77777777", "Test3 - Second Branch error");
+        check(instruction_out = x"aaaaaaaa", "Test3 - Second Branch error");
         
         assert false report "TEST SUCCESS" severity failure;
         
