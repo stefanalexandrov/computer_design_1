@@ -10,7 +10,7 @@ end entity general_register_tb;
 
 
 
-architecture behavioural of general_register_tb is
+architecture Behavioral of general_register_tb is
 
   -- component generics
   constant number : natural := 32;
@@ -108,12 +108,12 @@ begin  -- architecture behavioural
 
   end process WaveGen_Proc;
 
-end architecture behavioural;
+end architecture Behavioral;
 
 -------------------------------------------------------------------------------
 
 configuration general_register_tb_behavioural_cfg of general_register_tb is
-  for behavioural
+  for Behavioral
   end for;
 end general_register_tb_behavioural_cfg;
 

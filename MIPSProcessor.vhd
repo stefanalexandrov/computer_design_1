@@ -102,9 +102,8 @@ begin
 						control		=> control
 					);
 ------------------------ alu
--- istantiate alu control
 
-	
+-- istantiate alu control
 	MIPSalu_control:	entity work.alu_control(Behavioral) 
 					port map (
 						alu_op =>	alu_op,
@@ -112,9 +111,8 @@ begin
 						alu_control		=> alu_control
 					);
 -------------------------- alu_control
+
 -- general register
- 
-	
 		MIPSgen_reg:	entity work.general_register(Behavioral) 
 					generic map(
 						number => 32)
@@ -129,11 +127,9 @@ begin
 						read_data_1 => read_data_1,
 						read_data_2 => read_data_2
 					);
-
 ---------------------- general register
 
 -- instruction decoder
-
 				MIPSinstruction_decoder:	entity work.instruction_decoder(Behavioral) 
 					port map (
 						instruction =>	instruction,
@@ -148,8 +144,6 @@ begin
 ------------------------------- instr decoder
 
 -- instruction manager
-
-	 
 		MIPSinstruction_manager:	entity work.instruction_manager(Behavioral) 
 					port map (
 						clk =>	clk,
@@ -160,16 +154,12 @@ begin
 						branch_address => branch_address,
 						instruction_out => instruction_out,
 						imem_data_in => imem_data_in,
-						imem_address  => imem_address
+						imem_address  => imem_address_32
 					);
 
 ------------------- instr manager
 
---- control
-
-
-		
-		
+--- control	
 		MIPScontrol:	entity work.control(Behavioral) 
 					port map (
 						clk =>	clk,

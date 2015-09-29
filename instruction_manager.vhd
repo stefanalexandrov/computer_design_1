@@ -1,6 +1,33 @@
-library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
+----------------------------------------------------------------------------------
+-- Company: 
+-- Engineer: 
+-- 
+-- Create Date:    19:35:09 09/26/2015 
+-- Design Name: 
+-- Module Name:    control - Behavioral 
+-- Project Name: 
+-- Target Devices: 
+-- Tool versions: 
+-- Description: 
+--
+-- Dependencies: 
+--
+-- Revision: 
+-- Revision 0.01 - File Created
+-- Additional Comments: 
+--
+----------------------------------------------------------------------------------
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.NUMERIC_STD.ALL;
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+--use IEEE.NUMERIC_STD.ALL;
+
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx primitives in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
 
 entity instruction_manager is
 
@@ -15,9 +42,9 @@ entity instruction_manager is
     imem_data_in    : in  std_logic_vector(31 downto 0);
     imem_address    : out std_logic_vector(31 downto 0));
 
-end entity instruction_manager;
+end instruction_manager;
 
-architecture Behavioural of instruction_manager is
+architecture Behavioral of instruction_manager is
   signal PC                  : std_logic_vector(31 downto 0) := x"00000000";
   signal next_PC             : std_logic_vector(31 downto 0);
   signal increment_PC        : std_logic_vector(31 downto 0);
@@ -54,5 +81,11 @@ begin  -- behavioural
       PC <= next_PC;
     end if;
   end process;
-end Behavioural;
+  
+
+
+
+end Behavioral;
+
+
 
