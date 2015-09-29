@@ -53,13 +53,14 @@ architecture DummyArch of MIPSProcessor is
    signal func :  STD_LOGIC_VECTOR(5 downto 0);
    signal alu_control : STD_LOGIC_VECTOR(3 downto 0);
 	
-	  signal instruction :   STD_LOGIC_VECTOR(31 downto 0);
+	signal instruction :   STD_LOGIC_VECTOR(31 downto 0);
   signal opcode :  STD_LOGIC_VECTOR(5 downto 0);
   signal reg_a :  STD_LOGIC_VECTOR(4 downto 0);
   signal reg_b :  STD_LOGIC_VECTOR(4 downto 0);
   signal reg_d :  STD_LOGIC_VECTOR(4 downto 0);
   signal imm :  STD_LOGIC_VECTOR(15 downto 0);
-  --signal func :  STD_LOGIC_VECTOR(5 downto 0);
+  signal imm_extended :  STD_LOGIC_VECTOR(31 downto 0);
+  signal func_decoder :  STD_LOGIC_VECTOR(5 downto 0);
   signal jump_addr :  STD_LOGIC_VECTOR(25 downto 0);
 
 	
@@ -138,7 +139,7 @@ begin
 						reg_b => reg_b,
 						reg_d => reg_d,
 						imm => imm,
-						func => func,
+						func => func_decoder,
 						jump_addr =>  jump_addr 
 					);
 ------------------------------- instr decoder
@@ -192,6 +193,25 @@ begin
 		
 		
 	end process;
+	
+	instruction <= instruction_out;
+	read_reg_1 <= reg_a;
+	read_reg_2 <= reg_b;
+	write_register <= reg_b when (RegDst = '0') else
+							reg_d when (RegDst = '1');
+	operand_A <= read_data_1;
+	-- sign extend
+	imm_extended(15 downto 0) <= imm;
+   imm_extended(31 downto 16) <= (31 downto 16 => imm(15));
+	--- 
+	operand_B <= read_data_2 when (ALUSrc = '0') else 
+					imm_extended when (ALUSrc = '1');
+	alu_op <= ALUop;
+	func <= func_decoder;
+	control <= alu_control;
+	
+	
+	
 	
 	dmem_write_enable <= processor_enable;
 	imem_address <= (others => '0');
