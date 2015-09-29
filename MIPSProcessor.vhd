@@ -149,7 +149,7 @@ begin
 					port map (
 						clk =>	clk,
 						rst	=> reset,
-						alu_zero		=> alu_zero,
+						alu_zero		=> zero,
 						branch => branch,
 						jump => jump,
 						branch_address => branch_address,
@@ -179,21 +179,23 @@ begin
 						Jump => Jump
 					);
 ----------------------------------------------- control
-	DummyProc: process(clk, reset)
-	begin
-		if reset = '1' then
-			counterReg <= (others => '0');
-		elsif rising_edge(clk) then
-			if processor_enable = '1' then
-				counterReg <= counterReg + 1;
-			end if;
-		end if;
+	--DummyProc: process(clk, reset)
+--	begin
+--		if reset = '1' then
+--			counterReg <= (others => '0');
+--		elsif rising_edge(clk) then
+--			if processor_enable = '1' then
+--				counterReg <= counterReg + 1;
+--			end if;
+--		end if;
 		
 		
 		
 		
-	end process;
-	
+--	end process;
+
+        imem_address <= std_logic_vector(imem_address_32(7 downto 0));
+
 	instruction <= instruction_out;
 	read_reg_1 <= reg_a;
 	read_reg_2 <= reg_b;
@@ -209,16 +211,16 @@ begin
 	alu_op <= ALUop;
 	func <= func_decoder;
 	control <= alu_control;
-	dmem_address <= result;
-	dmem_data_in <= read_data_2;
-	write_data <= dmem_data_out when (MemtoReg = '1') else
+	dmem_address <= std_logic_vector(result(7 downto 0));
+        dmem_data_out <= read_data_2;
+	write_data <= dmem_data_in when (MemtoReg = '1') else
 					result when  (MemtoReg = '0');
 						
 	
 	dmem_write_enable <= processor_enable;
-	imem_address <= (others => '0');
-	dmem_address <= std_logic_vector(counterReg(7 downto 0));
-	dmem_data_out <= std_logic_vector(counterReg);
+	--imem_address <= (others => '0');
+	--dmem_address <= std_logic_vector(counterReg(7 downto 0));
+	--dmem_data_out <= std_logic_vector(counterReg);
 	
 
 end DummyArch;
