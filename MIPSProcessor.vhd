@@ -150,6 +150,7 @@ begin
 						clk =>	clk,
 						rst	=> reset,
 						alu_zero		=> zero,
+                                                processor_enable => processor_enable,
 						branch => branch,
 						jump => jump,
 						branch_address => branch_address,

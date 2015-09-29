@@ -34,6 +34,7 @@ entity instruction_manager is
   port(
     clk             : in  std_logic;
     rst             : in  std_logic;
+    processor_enable : in std_logic;
     alu_zero        : in  std_logic;
     branch          : in  std_logic;
     jump            : in  std_logic;
@@ -73,11 +74,11 @@ begin  -- behavioural
     first_mux_out when '0',
     jump_address   when '1';
 
-  process(clk, rst) is
+  process(clk, rst, processor_enable) is
   begin
     if rst = '1' then
       PC <= x"00000000";
-    elsif rising_edge(clk) then
+    elsif rising_edge(clk) and processor_enable = '1' then
       PC <= next_PC;
     end if;
   end process;
