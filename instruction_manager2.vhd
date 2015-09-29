@@ -54,5 +54,5 @@ begin  -- behavioural
       PC <= next_PC;
     end if;
   end process;
-end Behavioural;
+end behavioural;
 

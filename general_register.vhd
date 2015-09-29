@@ -18,7 +18,7 @@ entity general_register is
     read_data_2 : out std_logic_vector(31 downto 0));
 end entity general_register;
 
-architecture behavioural of general_register is
+architecture Behavioural of general_register is
   subtype data is std_logic_vector(31 downto 0);  -- a standart data which can be in the register
   type register_array is array ((number-1) downto 0) of data;
   signal register_bench : register_array := (others => (others => '0'));
@@ -37,5 +37,5 @@ begin  -- behavioural
       read_data_1 <= register_bench(to_integer(unsigned(read_reg_1)));
       read_data_2 <= register_bench(to_integer(unsigned(read_reg_2)));
 
-end behavioural;
+end Behavioural;
     

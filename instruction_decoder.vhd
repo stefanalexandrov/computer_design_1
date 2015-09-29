@@ -37,7 +37,7 @@ entity instruction_decoder is
            reg_d : out  STD_LOGIC_VECTOR(4 downto 0);
            imm : out  STD_LOGIC_VECTOR(15 downto 0);
            func : out  STD_LOGIC_VECTOR(5 downto 0);
-			  jump : out  STD_LOGIC_VECTOR(25 downto 0));
+			  jump_addr : out  STD_LOGIC_VECTOR(25 downto 0));
 end instruction_decoder;
 
 architecture Behavioral of instruction_decoder is
@@ -49,6 +49,6 @@ begin
 		reg_d <= instruction(15 downto 11);
 		imm <= instruction(15 downto 0);
 		func <= instruction(5 downto 0);
-		jump <= instruction(25 downto 0);
+		jump_addr <= instruction(25 downto 0);
 end Behavioral;
 
