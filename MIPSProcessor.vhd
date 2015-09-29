@@ -209,14 +209,17 @@ begin
 	alu_op <= ALUop;
 	func <= func_decoder;
 	control <= alu_control;
-	
-	
-	
+	dmem_address <= result;
+	dmem_data_in <= read_data_2;
+	write_data <= dmem_data_out when (MemtoReg = '1') else
+					result when  (MemtoReg = '0');
+						
 	
 	dmem_write_enable <= processor_enable;
 	imem_address <= (others => '0');
 	dmem_address <= std_logic_vector(counterReg(7 downto 0));
 	dmem_data_out <= std_logic_vector(counterReg);
+	
 
 end DummyArch;
 
