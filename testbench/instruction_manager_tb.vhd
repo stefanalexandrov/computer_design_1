@@ -59,7 +59,7 @@ begin  -- behaviour
   with processor_enable select
     imem_address <= 
     tb_address when '0',
-    std_logic_vector(PC_to_memory(7 downto 1)) when '1';
+    std_logic_vector(PC_to_memory(7 downto 0)) when '1';
 
     -- Clock process definitions
    clk_process :process
