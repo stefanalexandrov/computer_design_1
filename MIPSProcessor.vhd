@@ -29,7 +29,7 @@ entity MIPSProcessor is
 	);
 end MIPSProcessor;
 
-architecture DummyArch of MIPSProcessor is
+architecture Behavioral of MIPSProcessor is
 	signal counterReg : unsigned(31 downto 0);
 	
 	signal operand_A : STD_LOGIC_VECTOR(31 DOWNTO 0);
@@ -223,5 +223,5 @@ begin
 	--dmem_data_out <= std_logic_vector(counterReg);
 	
 
-end DummyArch;
+end Behavioral;
 
