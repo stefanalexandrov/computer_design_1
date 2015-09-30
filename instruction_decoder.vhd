@@ -30,7 +30,9 @@ use IEEE.STD_LOGIC_1164.ALL;
 --use UNISIM.VComponents.all;
 
 entity instruction_decoder is
-    Port ( instruction : in  STD_LOGIC_VECTOR(31 downto 0);
+    Port ( clk : in std_logic;
+			  rst : in std_logic;
+			  instruction : in  STD_LOGIC_VECTOR(31 downto 0);
            opcode : out  STD_LOGIC_VECTOR(5 downto 0);
            reg_a : out  STD_LOGIC_VECTOR(4 downto 0);
            reg_b : out  STD_LOGIC_VECTOR(4 downto 0);
@@ -41,14 +43,25 @@ entity instruction_decoder is
 end instruction_decoder;
 
 architecture Behavioral of instruction_decoder is
-	
+		signal instruction_in:  STD_LOGIC_VECTOR(31 downto 0);
 begin
-		opcode <= instruction(31 downto 26);
-		reg_a <= instruction(25 downto 21);
-		reg_b <= instruction(20 downto 16);
-		reg_d <= instruction(15 downto 11);
-		imm <= instruction(15 downto 0);
-		func <= instruction(5 downto 0);
-		jump_addr <= instruction(25 downto 0);
+		process(clk, rst) is
+
+		begin
+			 if rst = '1' then
+				instruction_in <= x"00000000";
+			 elsif rising_edge(clk) then
+				instruction_in <= instruction;
+			 end if;
+		end process;
+		
+		opcode <= instruction_in(31 downto 26);
+		reg_a <= instruction_in(25 downto 21);
+		reg_b <= instruction_in(20 downto 16);
+		reg_d <= instruction_in(15 downto 11);
+		imm <= instruction_in(15 downto 0);
+		func <= instruction_in(5 downto 0);
+		jump_addr <= instruction_in(25 downto 0);
+		
 end Behavioral;
 
