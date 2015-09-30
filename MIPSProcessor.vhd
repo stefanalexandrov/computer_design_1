@@ -133,6 +133,8 @@ begin
 -- instruction decoder
 				MIPSinstruction_decoder:	entity work.instruction_decoder(Behavioral) 
 					port map (
+						clk => clk,
+						rst => reset,
 						instruction =>	instruction,
 						opcode	=> opcode,
 						reg_a		=> reg_a,

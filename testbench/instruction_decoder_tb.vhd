@@ -39,7 +39,8 @@ ARCHITECTURE behavior OF instruction_decoder_tb IS
 
    --Inputs
    signal instruction : std_logic_vector(31 downto 0) := (others => '0');
-
+	signal clk : std_logic := '0';
+   signal rst : std_logic := '0';
  	--Outputs
    signal opcode : std_logic_vector(5 downto 0);
    signal reg_a : std_logic_vector(4 downto 0);
@@ -47,7 +48,7 @@ ARCHITECTURE behavior OF instruction_decoder_tb IS
    signal reg_d : std_logic_vector(4 downto 0);
    signal imm : std_logic_vector(15 downto 0);
    signal func : std_logic_vector(5 downto 0);
-   signal jump : std_logic_vector(25 downto 0);
+   signal jump_addr : std_logic_vector(25 downto 0);
    -- No clocks detected in port list. Replace <clock> below with 
    -- appropriate port name 
  
@@ -62,8 +63,10 @@ ARCHITECTURE behavior OF instruction_decoder_tb IS
  
 BEGIN
 	
-	  DUT: entity instruction_decoder 
+	  DUT: entity work.instruction_decoder 
 	  PORT MAP (
+			 clk => clk,
+			 rst => rst,
           instruction => instruction,
           opcode => opcode,
           reg_a => reg_a,
@@ -71,8 +74,18 @@ BEGIN
           reg_d => reg_d,
           imm => imm,
           func => func,
-          jump => jump
+          jump_addr => jump_addr
         );
+		  
+	   -- Clock process definitions
+   clk_process :process
+   begin
+		clk <= '0';
+		wait for clk_period/2;
+		clk <= '1';
+		wait for clk_period/2;
+   end process;
+ 
 	
    -- Stimulus process
    instruction_decode: process
@@ -86,7 +99,7 @@ BEGIN
 	 check(reg_d = b"00101", "reg_d incorrect!");
 	 check(imm = b"0010111010110100", "imm incorrect!");
 	 check(func = b"110100", "func incorrect!");
-	 check(jump = b"11100110100010111010110100", "func incorrect!");
+	 check(jump_addr = b"11100110100010111010110100", "func incorrect!");
     report "Test  passed" severity note;
       
 	 report "SUCCESS" severity failure;
