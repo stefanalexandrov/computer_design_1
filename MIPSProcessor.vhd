@@ -77,7 +77,7 @@ architecture Behavioral of MIPSProcessor is
 	 	 --signal clk 			:	STD_LOGIC;
 		--signal rst 			:	STD_LOGIC;
 		--signal Opcode 		: 	STD_LOGIC_VECTOR( 5 DOWNTO 0 );
-		signal start			: 	STD_LOGIC;
+		--signal start			: 	STD_LOGIC;
 		signal RegDst 		: STD_LOGIC;
 		--signal Branch 		: STD_LOGIC;
 		signal MemRead 		: STD_LOGIC;
@@ -156,7 +156,8 @@ begin
 						branch_address => branch_address,
 						instruction_out => instruction_out,
 						imem_data_in => imem_data_in,
-						imem_address  => imem_address_32
+						imem_address  => imem_address_32,
+                                                pc_enable => PCWrite
 					);
 
 ------------------- instr manager
@@ -167,7 +168,7 @@ begin
 						clk =>	clk,
 						rst	=> reset,
 						Opcode		=> Opcode,
-						start => start,
+						start => processor_enable,
 						RegDst => RegDst,
 						Branch => Branch,
 						MemRead =>  MemRead,
@@ -206,6 +207,7 @@ begin
 	-- sign extend
 	imm_extended(15 downto 0) <= imm;
    imm_extended(31 downto 16) <= (31 downto 16 => imm(15));
+	branch_address <= imm_extended;
 	--- 
 	operand_B <= read_data_2 when (ALUSrc = '0') else 
 					imm_extended when (ALUSrc = '1');

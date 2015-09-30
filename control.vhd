@@ -49,20 +49,20 @@ end control;
 
 architecture Behavioral of control is
 
-type   state_t is (FETCH, DECODE, LOAD_EXECUTION, STORE_EXECUTION, R_EXECUTION,
-		BRANCH_EXECUTION, JUMP_EXECUTION, STALL_LOAD, STALL_STORE);  -- the name of the states
+type   state_t is (IDLE, FETCH, DECODE, LOAD_EXECUTION, STORE_EXECUTION, R_EXECUTION,
+		BRANCH_EXECUTION, STALL_BRANCH, JUMP_EXECUTION, STALL_LOAD, STALL_STORE);  -- the name of the states
 		
   -- Fill in type and signal declarations here.
   signal current_state, next_state : state_t;  -- The current and the next step
 
-function fetch_transition(start : std_logic) return state_t is
+function idle_transition(start : std_logic) return state_t is
   begin
     if start = '1' then
-      return DECODE;
-    else
       return FETCH;
+    else
+      return IDLE;
     end if;
-  end fetch_transition;
+  end idle_transition;
   
   
 
@@ -92,13 +92,14 @@ begin-- architecture behavioural
 	
 with current_state select
     next_state <=
-    --fetch_transition(start)        		when FETCH,
-	 DECODE						        		when FETCH,
-    decode_transition(Opcode)		  		when DECODE,
+    idle_transition(start)        		when IDLE,
+	 decode_transition(Opcode)				when FETCH,
+   -- decode_transition(Opcode)		  		when DECODE,
     STALL_LOAD								  	when LOAD_EXECUTION,
     STALL_STORE	                     when STORE_EXECUTION,
     FETCH				                  when R_EXECUTION,
-    FETCH                        		when BRANCH_EXECUTION,
+    STALL_BRANCH                       when BRANCH_EXECUTION,
+	 FETCH                        		when STALL_BRANCH,	 
     FETCH                    				when JUMP_EXECUTION,
 	 FETCH                    				when STALL_LOAD,
 	 FETCH                    				when STALL_STORE;
@@ -124,6 +125,20 @@ with current_state select
 		PCWrite  <= '0';
 		
     case current_state is
+		when IDLE =>
+		
+		RegDst 	<= '0';  -- 0 The register destination number for the Write register comes from the rt field (bits 20:16).								   -- 1 The register destination number for the Write register comes from the rd field (bits 15:11).	  
+		ALUSrc 	<= '0';  -- 0 The second ALU operand comes from the second register file output (Read data 2).								   -- 1 The second ALU operand is the sign-extended, lower 16 bits of the instruction.
+		MemtoReg <= '0';  -- 0 The value fed to the register Write data input comes from the ALU.								   -- 1 The value fed to the register Write data input comes from the data memory.
+		RegWrite <= '0';  -- 0 None.									-- 1 The register on the Write register input is written with the value on the Write data input.
+		MemRead 	<= '0';  -- 0 None.								-- 1 Data memory contents designated by the address input are put on the Read data output.
+		MemWrite <= '0';  -- 0 None.								   -- 1 Data memory contents designated by the address input are replaced by the value on the Write data input.
+		Branch 	<= '0'; 
+		ALUop 	<= "00"; -- alu control		
+			
+		Jump	   <= '0';
+		PCWrite  <= '0';--enable PC write?	
+			
       when FETCH =>
        -- IR = memory(PC)
 		 -- pc = pc +4
@@ -226,6 +241,20 @@ with current_state select
 			
 			Jump	   <= '0';
 			PCWrite  <= '1';  --enable PC write?	
+			
+			when STALL_BRANCH =>
+		
+			RegDst 	<= '0';  -- do not care								   -- 1 The register destination number for the Write register comes from the rd field (bits 15:11).	  
+			ALUSrc 	<= '0';  -- 0 The second ALU operand comes from the second register file output (Read data 2).								   -- 1 The second ALU operand is the sign-extended, lower 16 bits of the instruction.
+			MemtoReg <= '0';  -- do not care								   -- 1 The value fed to the register Write data input comes from the data memory.
+			RegWrite <= '0';  -- 0 None.									-- 1 The register on the Write register input is written with the value on the Write data input.
+			MemRead 	<= '0';  -- 0 None.									-- 1 Data memory contents designated by the address input are put on the Read data output.
+			MemWrite <= '0';  -- 0 None.								   -- 1 Data memory contents designated by the address input are replaced by the value on the Write data input.
+			Branch 	<= '1'; 
+			ALUop 	<= "01"; -- alu control		
+			
+			Jump	   <= '0';
+			PCWrite  <= '0';  --enable PC write?	
 		
 		when JUMP_EXECUTION =>
 		
@@ -277,7 +306,7 @@ process(clk, rst) is
     -- this process allow to go to a next state or reset the FSM
   begin
     if rst = '1' then
-      current_state <= FETCH;
+      current_state <= IDLE;
     elsif rising_edge(clk) then
       current_state <= next_state;
     end if;

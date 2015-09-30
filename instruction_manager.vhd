@@ -38,6 +38,7 @@ entity instruction_manager is
     alu_zero        : in  std_logic;
     branch          : in  std_logic;
     jump            : in  std_logic;
+    pc_enable : in std_logic;
     branch_address   : in  std_logic_vector(31 downto 0);
     instruction_out : out std_logic_vector(31 downto 0);
     imem_data_in    : in  std_logic_vector(31 downto 0);
@@ -78,7 +79,7 @@ begin  -- behavioural
   begin
     if rst = '1' then
       PC <= x"00000000";
-    elsif rising_edge(clk) and processor_enable = '1' then
+    elsif rising_edge(clk) and processor_enable = '1' and pc_enable='1' then
       PC <= next_PC;
     end if;
   end process;
