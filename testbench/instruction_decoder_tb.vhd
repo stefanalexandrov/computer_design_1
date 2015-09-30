@@ -65,8 +65,8 @@ BEGIN
 	
 	  DUT: entity work.instruction_decoder 
 	  PORT MAP (
-			 clk => clk,
-			 rst => rst,
+--			 clk => clk,
+--			 rst => rst,
           instruction => instruction,
           opcode => opcode,
           reg_a => reg_a,
@@ -76,15 +76,15 @@ BEGIN
           func => func,
           jump_addr => jump_addr
         );
-		  
-	   -- Clock process definitions
-   clk_process :process
-   begin
-		clk <= '0';
-		wait for clk_period/2;
-		clk <= '1';
-		wait for clk_period/2;
-   end process;
+--		  
+--	    Clock process definitions
+--   clk_process :process
+--   begin
+--		clk <= '0';
+--		wait for clk_period/2;
+--		clk <= '1';
+--		wait for clk_period/2;
+--   end process;
  
 	
    -- Stimulus process
