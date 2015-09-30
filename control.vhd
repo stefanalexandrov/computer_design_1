@@ -240,7 +240,7 @@ with current_state select
 			ALUop 	<= "01"; -- alu control		
 			
 			Jump	   <= '0';
-			PCWrite  <= '1';  --enable PC write?	
+			PCWrite  <= '0';  --enable PC write?	
 			
 			when STALL_BRANCH =>
 		
@@ -268,7 +268,7 @@ with current_state select
 			ALUop 	<= "10"; -- do not care, alu control		
 			
 			Jump	   <= '1';
-			PCWrite  <= '1';  --enable PC write?
+			PCWrite  <= '0';  --enable PC write?
 		
 		when STALL_LOAD =>
 			RegDst 	<= '0';  -- 0 The register destination number for the Write register comes from the rt field (bits 20:16).								   -- 1 The register destination number for the Write register comes from the rd field (bits 15:11).	  

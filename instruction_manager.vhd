@@ -62,7 +62,7 @@ begin  -- behavioural
   imem_address        <= PC;
   current_instruction <= imem_data_in;
   instruction_out     <= current_instruction;
-  out_alu             <= std_logic_vector(unsigned(increment_PC) + unsigned(branch_address));
+  out_alu             <= std_logic_vector(unsigned(PC) + unsigned(branch_address));
   jump_address         <= current_instruction(25 downto 0) & next_PC(31 downto 26);
 
   with (branch and alu_zero) select
