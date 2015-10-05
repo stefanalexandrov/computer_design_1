@@ -226,7 +226,7 @@ DataMem:			entity work.DualPortMem port map (
 		
 		-- check the results
 		CheckDataMemory;
-
+		report "qqqq" severity failure;
       wait;
    end process;
 
