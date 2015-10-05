@@ -50,7 +50,7 @@ end control;
 architecture Behavioral of control is
 
 type   state_t is (IDLE, FETCH, DECODE, LOAD_EXECUTION, STORE_EXECUTION, R_EXECUTION,
-		BRANCH_EXECUTION, STALL_BRANCH, JUMP_EXECUTION, STALL_LOAD, STALL_STORE);  -- the name of the states
+		BRANCH_EXECUTION, STALL_BRANCH, JUMP_EXECUTION, STALL_LOAD, STALL_STORE, WAIT_FETCH);  -- the name of the states
 		
   -- Fill in type and signal declarations here.
   signal current_state, next_state : state_t;  -- The current and the next step
@@ -93,16 +93,17 @@ begin-- architecture behavioural
 with current_state select
     next_state <=
     idle_transition(start)        		when IDLE,
+	 FETCH when WAIT_FETCH,
 	 decode_transition(Opcode)				when FETCH,
    -- decode_transition(Opcode)		  		when DECODE,
     STALL_LOAD								  	when LOAD_EXECUTION,
     STALL_STORE	                     when STORE_EXECUTION,
-    FETCH				                  when R_EXECUTION,
+    WAIT_FETCH				                  when R_EXECUTION,
     STALL_BRANCH                       when BRANCH_EXECUTION,
-	 FETCH                        		when STALL_BRANCH,	 
-    FETCH                    				when JUMP_EXECUTION,
-	 FETCH                    				when STALL_LOAD,
-	 FETCH                    				when STALL_STORE;
+	 WAIT_FETCH                        		when STALL_BRANCH,	 
+    WAIT_FETCH                    				when JUMP_EXECUTION,
+	 WAIT_FETCH                    				when STALL_LOAD,
+	 WAIT_FETCH                    				when STALL_STORE;
 
 
 
@@ -150,14 +151,14 @@ with current_state select
 			RegDst 	<= '0';  -- 0 The register destination number for the Write register comes from the rt field (bits 20:16).								   -- 1 The register destination number for the Write register comes from the rd field (bits 15:11).	  
 			ALUSrc 	<= '0';  -- 0 The second ALU operand comes from the second register file output (Read data 2).								   -- 1 The second ALU operand is the sign-extended, lower 16 bits of the instruction.
 			MemtoReg <= '0';  -- 0 The value fed to the register Write data input comes from the ALU.								   -- 1 The value fed to the register Write data input comes from the data memory.
-			RegWrite <= '1';  -- 0 None.									-- 1 The register on the Write register input is written with the value on the Write data input.
+			RegWrite <= '0';  -- 0 None.									-- 1 The register on the Write register input is written with the value on the Write data input.
 			MemRead 	<= '0';  -- 0 None.									-- 1 Data memory contents designated by the address input are put on the Read data output.
 			MemWrite <= '0';  -- 0 None.								   -- 1 Data memory contents designated by the address input are replaced by the value on the Write data input.
 			Branch 	<= '0'; 
 			ALUop 	<= "00"; -- alu control		
 			
 			Jump	   <= '0';
-			PCWrite  <= '1';--enable PC write?	
+			PCWrite  <= '0';--enable PC write?	
 			
 		  
       when DECODE =>
@@ -193,7 +194,7 @@ with current_state select
 			ALUop 	<= "00"; -- alu control		
 			
 			Jump	   <= '0';
-			PCWrite  <= '0';--enable PC write?			
+			PCWrite  <= '1';--enable PC write?			
 			
 		 
 			
@@ -210,7 +211,7 @@ with current_state select
 			ALUop 	<= "00"; -- alu control		
 			
 			Jump	   <= '0';
-			PCWrite  <= '0';--enable PC write?	
+			PCWrite  <= '1';--enable PC write?	
 		
 		
 		when R_EXECUTION =>
@@ -225,7 +226,7 @@ with current_state select
 			ALUop 	<= "10"; -- alu control		
 			
 			Jump	   <= '0';
-			PCWrite  <= '0';--enable PC write?	
+			PCWrite  <= '1';--enable PC write?	
 		
 		
       when BRANCH_EXECUTION =>
@@ -240,7 +241,7 @@ with current_state select
 			ALUop 	<= "01"; -- alu control		
 			
 			Jump	   <= '0';
-			PCWrite  <= '0';  --enable PC write?	
+			PCWrite  <= '1';  --enable PC write?	
 			
 			when STALL_BRANCH =>
 		
