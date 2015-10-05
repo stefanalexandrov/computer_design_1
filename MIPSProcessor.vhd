@@ -83,9 +83,9 @@ architecture Behavioral of MIPSProcessor is
 		signal MemRead 		: STD_LOGIC;
 		signal MemtoReg 	: STD_LOGIC;
 		signal ALUop 		: 	STD_LOGIC_VECTOR( 1 DOWNTO 0 );
-		signal MemWrite 	: 	STD_LOGIC;
+		--signal MemWrite 	: 	STD_LOGIC;
 		signal ALUSrc 		: 	STD_LOGIC;
-		signal RegWrite 	: STD_LOGIC;
+		--signal RegWrite 	: STD_LOGIC;
 		signal PCWrite		: 	STD_LOGIC;
 		--signal Jump			:    STD_LOGIC; -- write enable for the pc
 				
@@ -176,9 +176,9 @@ begin
 						MemRead =>  MemRead,
 						MemtoReg  => MemtoReg,
 						ALUop =>  ALUop,
-						MemWrite => MemWrite,
+						MemWrite => dmem_write_enable,
 						ALUSrc => ALUSrc,
-						RegWrite => RegWrite,
+						RegWrite => reg_write,
 						PCWrite => PCWrite,
 						Jump => Jump
 					);
@@ -222,7 +222,7 @@ begin
 					result when  (MemtoReg = '0');
 						
 	
-	dmem_write_enable <= processor_enable;
+	--dmem_write_enable <= processor_enable;
 	--imem_address <= (others => '0');
 	--dmem_address <= std_logic_vector(counterReg(7 downto 0));
 	--dmem_data_out <= std_logic_vector(counterReg);
