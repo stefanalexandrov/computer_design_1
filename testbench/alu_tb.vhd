@@ -193,6 +193,14 @@ BEGIN
     check(zero = '0', "result incorrect!");
     report "Test 14 passed" severity note;
 	 
+	  wait for clk_period; -- test zero
+	 operand_A <= std_logic_vector(to_signed(5, 32)); 
+	 operand_B <=	b"0000_0000_0000_0000_1101_0000_0000_0000";
+	 control <= b"1111";
+    wait for clk_period;
+    check(result = b"1101_0000_0000_0000_0000_0000_0000_0000", "result incorrect!");
+    report "Test 15 passed" severity note;
+	 
 	 report "SUCCESS" severity failure;
 	 
 	end process;

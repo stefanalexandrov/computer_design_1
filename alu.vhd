@@ -41,17 +41,20 @@ end alu;
 architecture Behavioral of alu is
 	signal a_extended, b_extended                 : signed(31 downto 0);
 	signal result_extended                        : signed(31 downto 0);
+	signal lui_shift : signed(31 downto 0);
 	--signal same_input_sign, different_result_sign  : std_logic;
 	
 begin
 
 	a_extended            <=  signed(operand_A);
 	b_extended            <=  signed(operand_B);
-	
+	lui_shift(31 downto 16) <= b_extended(15 downto 0);
+	lui_shift(15 downto 0) <= x"0000";
 	result_extended  <= a_extended + b_extended when (control = b"0010") else -- add
 							a_extended - b_extended when (control = b"0110") else -- subtract
 							a_extended and b_extended when (control = b"0000") else -- AND
 							a_extended or b_extended when (control = b"0001") else -- OR
+							lui_shift when (control = b"1111") else ---LUI
 							to_signed(1, 32) when (control = b"0111") and (a_extended < b_extended) else -- SLT
 							to_signed(0, 32) when (control = b"0111") and (a_extended >= b_extended); -- SLT
 

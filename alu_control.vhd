@@ -40,11 +40,13 @@ architecture Behavioral of alu_control is
 begin
 	alu_control <= b"0010" when (alu_op = b"00") else
 						b"0110" when (alu_op = b"01") else
+						b"1111" when (alu_op = b"11") else
 						b"0010" when (alu_op = b"10") and (func = b"100000") else
 						b"0110" when (alu_op = b"10") and (func = b"100010") else
 						b"0000" when (alu_op = b"10") and (func = b"100100") else
 						b"0001" when (alu_op = b"10") and (func = b"100101") else
 						b"0111" when (alu_op = b"10") and (func = b"101010");
+						
 
 end Behavioral;
 
