@@ -63,7 +63,7 @@ begin  -- behavioural
   current_instruction <= imem_data_in;
   instruction_out     <= current_instruction;
   out_alu             <= std_logic_vector(unsigned(increment_PC) + unsigned(branch_address));
-  jump_address         <= current_instruction(25 downto 0) & next_PC(31 downto 26);
+  jump_address         <= next_PC(31 downto 26) & current_instruction(25 downto 0);
 
   with (branch and alu_zero) select
     first_mux_out <=

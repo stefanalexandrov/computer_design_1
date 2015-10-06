@@ -49,7 +49,7 @@ end control;
 
 architecture Behavioral of control is
 
-type   state_t is (IDLE, FETCH, DECODE, LOAD_EXECUTION, STORE_EXECUTION, R_EXECUTION,
+type   state_t is (IDLE, FETCH, DECODE, LOAD_EXECUTION,LOAD_U_EXECUTION, STORE_EXECUTION, R_EXECUTION,
 		BRANCH_EXECUTION, STALL_BRANCH, JUMP_EXECUTION, STALL_LOAD, STALL_STORE, WAIT_FETCH);  -- the name of the states
 		
   -- Fill in type and signal declarations here.
@@ -78,6 +78,8 @@ function decode_transition(Opcode : STD_LOGIC_VECTOR( 5 DOWNTO 0 )) return state
       return BRANCH_EXECUTION;
 	 elsif Opcode = "000010" then -- if the instruction is jump 
       return JUMP_EXECUTION;
+	elsif Opcode = "001111" then -- if the instruction is jump 
+      return LOAD_U_EXECUTION;
     else
       return FETCH;
     end if;
@@ -93,10 +95,11 @@ begin-- architecture behavioural
 with current_state select
     next_state <=
     idle_transition(start)        		when IDLE,
-	 FETCH when WAIT_FETCH,
+	 FETCH 										when WAIT_FETCH,
 	 decode_transition(Opcode)				when FETCH,
    -- decode_transition(Opcode)		  		when DECODE,
     STALL_LOAD								  	when LOAD_EXECUTION,
+	 WAIT_FETCH								  	when LOAD_U_EXECUTION,
     STALL_STORE	                     when STORE_EXECUTION,
     WAIT_FETCH				                  when R_EXECUTION,
     STALL_BRANCH                       when BRANCH_EXECUTION,
@@ -196,7 +199,20 @@ with current_state select
 			Jump	   <= '0';
 			PCWrite  <= '1';--enable PC write?			
 			
+		  when LOAD_U_EXECUTION =>
+       
 		 
+			RegDst 	<= '0';  -- 0 The register destination number for the Write register comes from the rt field (bits 20:16).								   -- 1 The register destination number for the Write register comes from the rd field (bits 15:11).	  
+			ALUSrc 	<= '1';  -- 0 The second ALU operand comes from the second register file output (Read data 2).								   -- 1 The second ALU operand is the sign-extended, lower 16 bits of the instruction.
+			MemtoReg <= '0';  -- 0 The value fed to the register Write data input comes from the ALU.								   -- 1 The value fed to the register Write data input comes from the data memory.
+			RegWrite <= '1';  -- 0 None.									-- 1 The register on the Write register input is written with the value on the Write data input.
+			MemRead 	<= '0';  -- 0 None.									-- 1 Data memory contents designated by the address input are put on the Read data output.
+			MemWrite <= '0';  -- 0 None.								   -- 1 Data memory contents designated by the address input are replaced by the value on the Write data input.
+			Branch 	<= '0'; 
+			ALUop 	<= "11"; -- alu control		
+			
+			Jump	   <= '0';
+			PCWrite  <= '1';--enable PC write?			
 			
 			
       when STORE_EXECUTION =>
@@ -269,7 +285,7 @@ with current_state select
 			ALUop 	<= "10"; -- do not care, alu control		
 			
 			Jump	   <= '1';
-			PCWrite  <= '0';  --enable PC write?
+			PCWrite  <= '1';  --enable PC write?
 		
 		when STALL_LOAD =>
 			RegDst 	<= '0';  -- 0 The register destination number for the Write register comes from the rt field (bits 20:16).								   -- 1 The register destination number for the Write register comes from the rd field (bits 15:11).	  
