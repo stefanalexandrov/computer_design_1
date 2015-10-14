@@ -49,7 +49,7 @@ end control;
 
 architecture Behavioral of control is
 
-type   state_t is (IDLE, FETCH, DECODE, LOAD_EXECUTION,LOAD_U_EXECUTION, STORE_EXECUTION, R_EXECUTION,
+type   state_t is (IDLE, FETCH, LOAD_EXECUTION,LOAD_U_EXECUTION, STORE_EXECUTION, R_EXECUTION,
 		BRANCH_EXECUTION, STALL_BRANCH, JUMP_EXECUTION, STALL_LOAD, STALL_STORE, WAIT_FETCH);  -- the name of the states
 		
   -- Fill in type and signal declarations here.
@@ -89,7 +89,7 @@ function decode_transition(Opcode : STD_LOGIC_VECTOR( 5 DOWNTO 0 )) return state
 
 begin-- architecture behavioural
 
---FETCH, DECODE, LOAD_EXECUTION, STORE_EXECUTION, R_EXECUTION,
+--FETCH, LOAD_EXECUTION, STORE_EXECUTION, R_EXECUTION,
 	--	BRANCH_EXECUTION, JUMP_EXECUTION, STALL
 	
 with current_state select
@@ -162,28 +162,7 @@ with current_state select
 			
 			Jump	   <= '0';
 			PCWrite  <= '0';--enable PC write?	
-			
-		  
-      when DECODE =>
-			-- performs actions being either applicable to all instructions
-			-- or not harmful to any isntructions
-			-- -> Read operand registers specified by rs and rt
-			-- -> after this state, the function decode_transition determines which is the next 
-			-- state based on the current state
-			
-			RegDst 	<= '0';
-			Branch 	<= '0'; 
-			Jump	   <= '0';
-			MemRead 	<= '0';
-			MemtoReg <= '0';
-			ALUop 	<= "00";	
-			MemWrite <= '0';	
-			ALUSrc 	<= '0';
-			RegWrite <= '1'; -- the register file can be written
-			PCWrite  <= '0'; -- the pc can be written
-			
-			
-       
+			       
       when LOAD_EXECUTION =>
        
 		 

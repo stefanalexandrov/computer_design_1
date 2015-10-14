@@ -45,15 +45,6 @@ end instruction_decoder;
 architecture Behavioral of instruction_decoder is
 		signal instruction_in:  STD_LOGIC_VECTOR(31 downto 0);
 begin
---		process(clk, rst) is
---
---		begin
---			 if rst = '1' then
---				instruction_in <= x"00000000";
---			 elsif rising_edge(clk) then
---				instruction_in <= instruction;
---			 end if;
---		end process;
 		instruction_in <= instruction;
 		opcode <= instruction_in(31 downto 26);
 		reg_a <= instruction_in(25 downto 21);
